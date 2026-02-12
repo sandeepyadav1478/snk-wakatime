@@ -2,6 +2,18 @@ name: "generate-snake-game-from-github-contribution-grid"
 description: "Generates a snake game from a github user contributions grid. Output the animation as gif or svg"
 author: "platane"
 
+inputs:
+  github_user_name:
+    description: github user name
+    required: false
+  wakatime_json_url:
+    description: WakaTime JSON URL for custom data
+    required: false
+  outputs:
+    description: |
+      list of files to generate ...
+    required: true
+
 runs:
   using: docker
   image: docker://platane/snk@sha256:b107f810d467a26b1e7ac46751073d1247728421155a47e77f6cd2dc66dcc74c
