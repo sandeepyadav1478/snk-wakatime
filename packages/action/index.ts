@@ -6,6 +6,7 @@ import * as githubAction from "./github-action";
 (async () => {
   try {
     const userName = githubAction.getInput("github_user_name");
+    const wakatimeUrl = githubAction.getInput("wakatime_json_url");
     const outputsRaw = [
       ...githubAction.getInput("outputs").split("\n"),
       //
@@ -23,8 +24,11 @@ import * as githubAction from "./github-action";
     const { generateContributionSnake } = await import(
       "./generateContributionSnake"
     );
+    
+    // Pass wakatimeUrl to the generator
     const results = await generateContributionSnake(userName, outputs, {
       githubToken,
+      wakatimeUrl,
     });
 
     outputs.forEach((out, i) => {
