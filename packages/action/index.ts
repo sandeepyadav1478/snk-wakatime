@@ -24,7 +24,7 @@ import * as githubAction from "./github-action";
     const { generateContributionSnake } = await import(
       "./generateContributionSnake"
     );
-    
+
     // Pass wakatimeUrl to the generator
     const results = await generateContributionSnake(userName, outputs, {
       githubToken,
