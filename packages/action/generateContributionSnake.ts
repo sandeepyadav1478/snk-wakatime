@@ -9,30 +9,30 @@ import type { AnimationOptions } from "@snk/gif-creator";
 // Helper function to fetch and convert WakaTime data
 const getWakaTimeContribution = async (wakatimeUrl: string) => {
   console.log("📊 fetching WakaTime data");
-  
+
   const response = await fetch(wakatimeUrl);
   if (!response.ok) {
     throw new Error(`Failed to fetch WakaTime data: ${response.statusText}`);
   }
-  
+
   const wakatimeData = await response.json();
   console.log(`✓ Got ${wakatimeData.days?.length || 0} days from WakaTime`);
-  
+
   // Convert WakaTime data to cell format
   const dateMap: Record<string, { hours: number; level: number }> = {};
-  
+
   for (const day of wakatimeData.days || []) {
     const hours = (day.total || 0) / 3600;
     let level = 0;
-    
+
     if (hours >= 5) level = 4;
     else if (hours >= 3) level = 3;
     else if (hours >= 1) level = 2;
     else if (hours > 0) level = 1;
-    
+
     dateMap[day.date] = { hours, level };
   }
-  
+
   // Generate cells in snk format (52 weeks × 7 days)
   const cells: Array<{
     x: number;
@@ -41,25 +41,25 @@ const getWakaTimeContribution = async (wakatimeUrl: string) => {
     count: number;
     level: number;
   }> = [];
-  
+
   const endDate = new Date();
   const startDate = new Date(endDate);
   startDate.setDate(startDate.getDate() - 363); // 52 weeks
-  
+
   // Adjust start to Sunday
   const dayOfWeek = startDate.getDay();
   if (dayOfWeek !== 0) {
     startDate.setDate(startDate.getDate() - dayOfWeek);
   }
-  
+
   let weekIndex = 0;
   let currentDate = new Date(startDate);
-  
+
   while (weekIndex < 53) {
     for (let dayOfWeek = 0; dayOfWeek < 7; dayOfWeek++) {
       const dateStr = currentDate.toISOString().split('T')[0];
       const data = dateMap[dateStr] || { hours: 0, level: 0 };
-      
+
       cells.push({
         x: weekIndex,
         y: dayOfWeek,
@@ -67,12 +67,12 @@ const getWakaTimeContribution = async (wakatimeUrl: string) => {
         count: Math.round(data.hours * 5), // Convert hours to contribution count
         level: data.level,
       });
-      
+
       currentDate.setDate(currentDate.getDate() + 1);
     }
     weekIndex++;
   }
-  
+
   console.log(`✓ Generated ${cells.length} cells, ${Object.keys(dateMap).length} coding days`);
   return cells;
 };
@@ -87,7 +87,7 @@ export const generateContributionSnake = async (
   options: { githubToken: string; wakatimeUrl?: string },
 ) => {
   let cells;
-  
+
   // Check if WakaTime URL is provided
   if (options.wakatimeUrl) {
     try {
