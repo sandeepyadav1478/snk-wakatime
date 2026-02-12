@@ -1,9 +1,9 @@
 {
-  "name": "snk",
-  "description": "Generates a snake game from a github user contributions grid",
-  "version": "3.4.1",
+  "name": "snk-wakatime",
+  "description": "Generates a snake game from WakaTime coding activity or GitHub contributions",
+  "version": "1.0.0",
   "private": true,
-  "repository": "github:platane/snk",
+  "repository": "github:sandeepyadav1478/snk-wakatime",
   "devDependencies": {
     "@types/bun": "1.3.4",
     "prettier": "3.6.2",

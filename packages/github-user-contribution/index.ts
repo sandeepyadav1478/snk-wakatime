@@ -42,7 +42,7 @@ export const getGithubUserContribution = async (
     headers: {
       Authorization: `bearer ${o.githubToken}`,
       "Content-Type": "application/json",
-      "User-Agent": "me@platane.me",
+      "User-Agent": "snk-wakatime",
     },
     method: "POST",
     body: JSON.stringify({ variables, query }),

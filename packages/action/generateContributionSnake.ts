@@ -57,7 +57,7 @@ const getWakaTimeContribution = async (wakatimeUrl: string) => {
 
   while (weekIndex < 53) {
     for (let dayOfWeek = 0; dayOfWeek < 7; dayOfWeek++) {
-      const dateStr = currentDate.toISOString().split('T')[0];
+      const dateStr = currentDate.toISOString().split("T")[0];
       const data = dateMap[dateStr] || { hours: 0, level: 0 };
 
       cells.push({
@@ -73,7 +73,9 @@ const getWakaTimeContribution = async (wakatimeUrl: string) => {
     weekIndex++;
   }
 
-  console.log(`✓ Generated ${cells.length} cells, ${Object.keys(dateMap).length} coding days`);
+  console.log(
+    `✓ Generated ${cells.length} cells, ${Object.keys(dateMap).length} coding days`,
+  );
   return cells;
 };
 
@@ -93,7 +95,10 @@ export const generateContributionSnake = async (
     try {
       cells = await getWakaTimeContribution(options.wakatimeUrl);
     } catch (error) {
-      console.error("⚠️ Failed to fetch WakaTime data, falling back to GitHub:", error);
+      console.error(
+        "⚠️ Failed to fetch WakaTime data, falling back to GitHub:",
+        error,
+      );
       console.log("🎣 fetching github user contribution");
       cells = await getGithubUserContribution(userName, options);
     }

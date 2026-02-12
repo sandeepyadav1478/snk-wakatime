@@ -1,9 +1,9 @@
 # svg-only
 
-Another action running purely on js (without Docker).
+Another action running purely on JS (without Docker). Supports both WakaTime and GitHub contribution data.
 
-As a drawback, it can not generate gif image.
+As a drawback, it cannot generate GIF images.
 
 ## Build process
 
-dist file are built and push on release, by the release action.
+dist files are built and pushed on release, by the release action.

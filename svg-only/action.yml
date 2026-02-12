@@ -1,17 +1,27 @@
-name: "generate-snake-game-from-github-contribution-grid"
-description: "Generates a snake game from a github user contributions grid. Output the animation as svg"
-author: "platane"
+name: "WakaTime Snake Animation (SVG only)"
+description: "Generates a snake game animation as SVG from WakaTime coding activity or GitHub contributions. Lightweight variant without GIF support. Based on Platane/snk."
+author: "sandeepyadav1478 (based on Platane/snk by platane)"
+
+branding:
+  icon: "activity"
+  color: "green"
 
 runs:
   using: node20
   main: dist/index.js
 
 inputs:
+  wakatime_json_url:
+    description: |
+      Public WakaTime JSON share URL for coding activity data.
+      Create one at https://wakatime.com/settings/shares
+      Example: https://wakatime.com/share/@username/uuid.json
+    required: false
   github_user_name:
-    description: "github user name"
-    required: true
+    description: "GitHub username to read contribution graph from. Only needed when wakatime_json_url is not provided."
+    required: false
   github_token:
-    description: "github token used to fetch the contribution calendar. Default to the action token if empty."
+    description: "GitHub token used to fetch the contribution calendar. Defaults to the action token."
     required: false
     default: ${{ github.token }}
   outputs:
@@ -24,7 +34,7 @@ inputs:
 
       - palette:      A preset of color, one of [github, github-dark, github-light]
       - color_snake:  Color of the snake
-      - color_dots:   Coma separated list of dots color. 
+      - color_dots:   Comma separated list of dots color.
                       The first one is 0 contribution, then it goes from the low contribution to the highest.
                       Exactly 5 colors are expected.
 

@@ -1,104 +1,180 @@
-# snk
+# snk-wakatime
 
-[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/platane/platane/main.yml?label=action&style=flat-square)](https://github.com/Platane/Platane/actions/workflows/main.yml)
-[![GitHub release](https://img.shields.io/github/release/platane/snk.svg?style=flat-square)](https://github.com/platane/snk/releases/latest)
-[![GitHub marketplace](https://img.shields.io/badge/marketplace-snake-blue?logo=github&style=flat-square)](https://github.com/marketplace/actions/generate-snake-game-from-github-contribution-grid)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/sandeepyadav1478/snk-wakatime/main.yml?label=CI&style=flat-square)](https://github.com/sandeepyadav1478/snk-wakatime/actions/workflows/main.yml)
+[![GitHub release](https://img.shields.io/github/release/sandeepyadav1478/snk-wakatime.svg?style=flat-square)](https://github.com/sandeepyadav1478/snk-wakatime/releases/latest)
+[![GitHub marketplace](https://img.shields.io/badge/marketplace-wakatime--snake--animation-blue?logo=github&style=flat-square)](https://github.com/marketplace/actions/wakatime-snake-animation)
 ![type definitions](https://img.shields.io/npm/types/typescript?style=flat-square)
 ![code style](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)
 
-Generates a snake game from a github user contributions graph
+Generates a snake game animation from **WakaTime coding activity** or GitHub contributions. The snake eats contribution cells in an optimal path, producing animated SVG or GIF files for your GitHub profile README.
 
-<picture>
-  <source
-    media="(prefers-color-scheme: dark)"
-    srcset="https://raw.githubusercontent.com/platane/snk/output/github-contribution-grid-snake-dark.svg"
-  />
-  <source
-    media="(prefers-color-scheme: light)"
-    srcset="https://raw.githubusercontent.com/platane/snk/output/github-contribution-grid-snake.svg"
-  />
-  <img
-    alt="github contribution grid snake animation"
-    src="https://raw.githubusercontent.com/platane/snk/output/github-contribution-grid-snake.svg"
-  />
-</picture>
+> Fork of [Platane/snk](https://github.com/Platane/snk) with WakaTime integration.
 
-Pull a github user's contribution graph.
-Make it a snake Game, generate a snake path where the cells get eaten in an orderly fashion.
+## Usage with WakaTime
 
-Generate a [gif](https://github.com/Platane/snk/raw/output/github-contribution-grid-snake.gif) or [svg](https://github.com/Platane/snk/raw/output/github-contribution-grid-snake.svg) image. Colors can [be](https://raw.githubusercontent.com/platane/snk/output/github-contribution-grid-snake-ocean.svg) [customized](https://raw.githubusercontent.com/platane/snk/output/github-contribution-grid-snake-grey.svg).
+### Prerequisites
 
-Available as github action. It can automatically generate a new image each day. Which makes for great [github profile readme](https://docs.github.com/en/free-pro-team@latest/github/setting-up-and-managing-your-github-profile/managing-your-profile-readme)
+1. A [WakaTime](https://wakatime.com) account with coding activity tracked
+2. A **public** JSON share URL — create one at [WakaTime Shares](https://wakatime.com/settings/shares)
 
-## Usage
+### GitHub Action
 
-### **github action**
+1. Add your WakaTime JSON share URL as a repository secret named `WAKATIME_JSON_URL` (Settings > Secrets and variables > Actions).
+2. Create `.github/workflows/wakatime-snake.yml` in your profile repo:
 
 ```yaml
-- uses: Platane/snk@v3
-  with:
-    # github user name to read the contribution graph from (**required**)
-    # using action context var `github.repository_owner` or specified user
-    github_user_name: ${{ github.repository_owner }}
+name: WakaTime Snake
 
-    # list of files to generate.
-    # one file per line. Each output can be customized with options as query string.
-    #
-    #  supported options:
-    #  - palette:           A preset of color, one of [github, github-dark, github-light]
-    #  - color_snake:       Color of the snake
-    #  - color_dots:        Coma separated list of dots color.
-    #                       The first one is 0 contribution, then it goes from the low contribution to the highest.
-    #                       Exactly 5 colors are expected.
-    #  - color_background:  Color of the background (for gif only)
-    outputs: |
-      dist/github-snake.svg
-      dist/github-snake-dark.svg?palette=github-dark
-      dist/ocean.gif?color_snake=orange&color_dots=#bfd6f6,#8dbdff,#64a1f4,#4b91f1,#3c7dd9&color_background=#aaaaaa
+on:
+  schedule:
+    - cron: "0 0 * * *" # Runs daily at midnight UTC
+  workflow_dispatch: # Allows manual trigger
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write # Needed to push to output branch
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Generate WakaTime Snake
+        uses: sandeepyadav1478/snk-wakatime@main
+        with:
+          wakatime_json_url: ${{ secrets.WAKATIME_JSON_URL }}
+          outputs: |
+            dist/wakatime-snake.svg
+            dist/wakatime-snake-dark.svg?palette=github-dark
+
+      - name: Deploy to GitHub Pages
+        uses: crazy-max/ghaction-github-pages@v4
+        with:
+          target_branch: output
+          build_dir: dist
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
-[example with cron job](https://github.com/Platane/Platane/blob/master/.github/workflows/main.yml#L26-L33)
-
-### **svg**
-
-If you are only interested in generating a svg (not a gif), consider using this faster action: `uses: Platane/snk/svg-only@v3`
-
-### **dark mode**
-
-![dark mode](https://github.com/user-attachments/assets/6b900b64-0cdc-43f0-a234-e11dba8e786e)
-
-For **dark mode** support on github, use this [special syntax](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#specifying-the-theme-an-image-is-shown-to) in your readme.
+### Display in your README
 
 ```html
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="github-snake-dark.svg" />
-  <source media="(prefers-color-scheme: light)" srcset="github-snake.svg" />
-  <img alt="github-snake" src="github-snake.svg" />
+  <source
+    media="(prefers-color-scheme: dark)"
+    srcset="
+      https://raw.githubusercontent.com/YOUR_USER/YOUR_USER/output/wakatime-snake-dark.svg
+    "
+  />
+  <source
+    media="(prefers-color-scheme: light)"
+    srcset="
+      https://raw.githubusercontent.com/YOUR_USER/YOUR_USER/output/wakatime-snake.svg
+    "
+  />
+  <img
+    alt="wakatime snake"
+    src="https://raw.githubusercontent.com/YOUR_USER/YOUR_USER/output/wakatime-snake.svg"
+  />
 </picture>
 ```
 
-### **interactive demo**
+Replace `YOUR_USER` with your GitHub username.
 
-<a href="https://platane.github.io/snk">
-  <img height="300px" src="https://user-images.githubusercontent.com/1659820/121798244-7c86d700-cc25-11eb-8c1c-b8e65556ac0d.gif" ></img>
-</a>
+## Usage with GitHub Contributions
 
-[platane.github.io/snk](https://platane.github.io/snk)
+If no `wakatime_json_url` is provided, the action falls back to GitHub contribution data (same as the original [Platane/snk](https://github.com/Platane/snk)):
 
-### **local**
-
-```sh
-npm install
-
-npm run dev:demo
+```yaml
+- uses: sandeepyadav1478/snk-wakatime@v1
+  with:
+    github_user_name: ${{ github.repository_owner }}
+    outputs: |
+      dist/github-snake.svg
+      dist/github-snake-dark.svg?palette=github-dark
+      dist/ocean.gif?color_snake=orange&color_dots=#bfd6f6,#8dbdff,#64a1f4,#4b91f1,#3c7dd9
 ```
+
+## SVG-only variant
+
+For a faster, lighter action that only generates SVGs (no GIF support, no Docker):
+
+```yaml
+- uses: sandeepyadav1478/snk-wakatime/svg-only@v1
+  with:
+    wakatime_json_url: "https://wakatime.com/share/@username/uuid.json"
+    outputs: |
+      dist/wakatime-snake.svg
+      dist/wakatime-snake-dark.svg?palette=github-dark
+```
+
+## Inputs
+
+| Input               | Description                                               | Required | Default               |
+| ------------------- | --------------------------------------------------------- | -------- | --------------------- |
+| `wakatime_json_url` | Public WakaTime JSON share URL                            | No       | —                     |
+| `github_user_name`  | GitHub username for contribution graph (fallback)         | No       | —                     |
+| `github_token`      | GitHub token for API access                               | No       | `${{ github.token }}` |
+| `outputs`           | List of files to generate, one per line with query params | **Yes**  | —                     |
+
+## Output Customization
+
+Each output file can be customized with query string parameters:
+
+| Option             | Description                             | Example                                 |
+| ------------------ | --------------------------------------- | --------------------------------------- |
+| `palette`          | Color preset                            | `github`, `github-dark`, `github-light` |
+| `color_snake`      | Snake color                             | `blue`, `#7845ab`                       |
+| `color_dots`       | 5 comma-separated colors for levels 0-4 | `#eee,#aaa,#888,#666,#444`              |
+| `color_background` | Background color (GIF only)             | `#f7f8fa`                               |
+
+Example:
+
+```
+dist/snake.svg?palette=github-dark&color_snake=blue
+dist/ocean.gif?color_snake=orange&color_dots=#bfd6f6,#8dbdff,#64a1f4,#4b91f1,#3c7dd9&color_background=#aaaaaa
+```
+
+## WakaTime Hours-to-Level Mapping
+
+WakaTime coding hours are mapped to contribution levels:
+
+| Hours Coded | Level | Intensity |
+| ----------- | ----- | --------- |
+| 0           | 0     | Empty     |
+| > 0         | 1     | Low       |
+| >= 1        | 2     | Medium    |
+| >= 3        | 3     | High      |
+| >= 5        | 4     | Very High |
+
+## Dark Mode
+
+For dark mode support on GitHub, use the `<picture>` element syntax shown above. Generate both a light and dark variant using the `palette=github-dark` query parameter.
 
 ## Implementation
 
-[solver algorithm](./packages/solver/README.md)
+- [Solver algorithm](./packages/solver/README.md)
+- WakaTime integration in [generateContributionSnake.ts](./packages/action/generateContributionSnake.ts)
 
-## Contribution Policy
+## Local Development
 
-This project does not accept pull request.
+```sh
+bun install --frozen-lockfile
+npm run type          # type checking
+npm run lint          # prettier check
+bun test              # run tests
+npm run build:action  # build the action
+```
 
-Reporting or fixing issues is appreciated, but change in the API or implementation should be discussed in issue first and is likely not going be greenlighted.
+## Credits
+
+This project is a fork of [Platane/snk](https://github.com/Platane/snk) — the original snake game contribution grid generator. All core snake algorithm, solver, SVG/GIF rendering, and grid logic were built by [Platane](https://github.com/Platane). This fork adds WakaTime coding activity as an alternative data source.
+
+- **Original project:** [Platane/snk](https://github.com/Platane/snk) by [Platane](https://github.com/Platane)
+- **WakaTime integration:** [sandeepyadav1478](https://github.com/sandeepyadav1478)
+
+## License
+
+[MIT](./LICENSE) — Original work by [platane](https://github.com/Platane), WakaTime modifications by [sandeepyadav1478](https://github.com/sandeepyadav1478).

@@ -1,16 +1,23 @@
-name: "generate-snake-game-from-github-contribution-grid"
-description: "Generates a snake game from a github user contributions grid or WakaTime data. Output the animation as gif or svg"
-author: "platane (modified by sandeepyadav1478)"
+name: "WakaTime Snake Animation"
+description: "Generates a snake game animation from WakaTime coding activity or GitHub contributions. Outputs animated SVG or GIF for profile READMEs. Based on Platane/snk."
+author: "sandeepyadav1478 (based on Platane/snk by platane)"
+
+branding:
+  icon: "activity"
+  color: "green"
 
 inputs:
-  github_user_name:
-    description: "github user name"
-    required: false
   wakatime_json_url:
-    description: "WakaTime JSON URL for custom data (e.g., https://wakatime.com/share/@user/xxx.json)"
+    description: |
+      Public WakaTime JSON share URL for coding activity data.
+      Create one at https://wakatime.com/settings/shares
+      Example: https://wakatime.com/share/@username/uuid.json
+    required: false
+  github_user_name:
+    description: "GitHub username to read contribution graph from. Only needed when wakatime_json_url is not provided, or as fallback."
     required: false
   github_token:
-    description: "github token used to fetch the contribution calendar. Default to the action token if empty."
+    description: "GitHub token used to fetch the contribution calendar. Defaults to the action token."
     required: false
     default: ${{ github.token }}
   outputs:
