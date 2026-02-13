@@ -1,5 +1,5 @@
 name: "WakaTime Snake Animation"
-description: "Generates a snake game animation from WakaTime coding activity or GitHub contributions. Outputs animated SVG or GIF for profile READMEs. Based on Platane/snk."
+description: "Generates a snake game animation from WakaTime coding activity or GitHub contributions as SVG/GIF."
 author: "sandeepyadav1478 (based on Platane/snk by platane)"
 
 branding:
