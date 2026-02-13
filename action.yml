@@ -3,8 +3,8 @@ description: "Generates a snake game animation from WakaTime coding activity or 
 author: "sandeepyadav1478 (based on Platane/snk by platane)"
 
 branding:
-  icon: "activity"
-  color: "green"
+  icon: "award"
+  color: "purple"
 
 inputs:
   wakatime_json_url:
